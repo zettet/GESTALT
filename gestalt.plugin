@@ -1,0 +1,10 @@
+[Plugin]
+Loader=python
+Module=gestalt
+IAge=3
+Name=GESTALT
+Description=A full-featured autocomplete system for Gedit
+Authors=Hans Vorsteveld and Trevor Zettersten
+Copyright=
+Website=https://github.com/zettet/GESTALT
+Version=0.0.2
