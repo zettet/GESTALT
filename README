@@ -1,1 +1,9 @@
 This project has been reposessed by the United States Military under article 67 of the New Media Retention Act.
+
+To install GESTALT follow these steps:
+
+1) Download or clone the git repository
+2) Move the GESTALT directory to ~/.local/share/gedit/plugins
+3) Restart Gedit and ensure GESTALT shows up in the plugins menu
+
+*NOTE* You can clone the repository straight to the plugins directory meaning that copying is not necessary
