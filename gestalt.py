@@ -1,5 +1,6 @@
 from gi.repository import GObject, Gedit
-        
+from GESTALTDocument import GESTALTDocument
+
 class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
     __gtype_name__ = "GESTALTWindowActivatable"
     window = GObject.property(type=Gedit.Window)
@@ -10,19 +11,27 @@ class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
     # Called when the plugin is activated.  Setup should be done here
     def do_activate(self):
         print "Starting GESTALT..."
-        handlers = []; # An array to hold handlers for adding and removing tabs
 
+        #######################################
+        # PLUGIN SETUP
+        handlers = []; # An array to hold handlers for adding and removing tabs
         # ADD TAB HANDLER
         handler_id = self.window.connect("tab-added", self.on_tab_added);
         handlers.append(handler_id);
-
         # REMOVE TAB HANDLER
         handler_id = self.window.connect("tab-removed", self.on_tab_removed);
         handlers.append(handler_id);
-
         # Set the handlers array so it can be accessed later
         self.window.set_data("tab_handlers",handlers);
         print "Window ", self.window, " activated."
+        #######################################
+
+        #######################################
+        # GESTALT Setup
+        open_documents = []; # An array to hold all of the currently open documents
+
+        self.window.set_data("open_documents",open_documents);
+        #######################################
 
     # Called when the plugin is deactivated.  Any cleanup should be done here
     def do_deactivate(self):
@@ -43,6 +52,37 @@ class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
     def on_tab_added(self, window, tab, data=None):
         print "Added tab"
 
+        ### GET DATA
+        open_documents = self.window.get_data("open_documents");
+        ###
+
+        # TODO Check if the opened tab is a new document or an opened file
+        location = tab.get_document().get_uri_for_display();
+        doc = GESTALTDocument(location,tab);
+        
+        open_documents.append(doc);
+
+        ### SET DATA
+        self.window.set_data("open_documents",open_documents);
+        ###
+
+        print "Tab added"
+
     # The handler callback for when a tab is removed
     def on_tab_removed(self, window, tab, data=None):
-        print "Removed tab" 
+        print "Removing Tab"
+        
+        ### GET DATA
+        open_documents = self.window.get_data("open_documents");
+        ###
+
+        for doc in open_documents:
+            if doc.tab == tab:
+                open_documents.remove(doc)
+                break
+
+        ### SET DATA
+        self.window.set_data("open_documents",open_documents);
+        ###
+
+        print "Removed tab"
