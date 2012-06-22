@@ -1,5 +1,6 @@
 from gi.repository import GObject, Gedit
 from GESTALTDocument import GESTALTDocument
+from GESTALTCompletionWindow import GESTALTCompletionWindow
 
 class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
     __gtype_name__ = "GESTALTWindowActivatable"
@@ -7,6 +8,7 @@ class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
     
     def __init__(self):
         GObject.Object.__init__(self)
+        self.popup = None
     
     # Called when the plugin is activated.  Setup should be done here
     def do_activate(self):
@@ -21,8 +23,11 @@ class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         # REMOVE TAB HANDLER
         handler_id = self.window.connect("tab-removed", self.on_tab_removed);
         handlers.append(handler_id);
+        # KEYPRESS HANDLER
+        handler_id = self.window.connect("key-press-event", self.on_keypress);
+        handlers.append(handler_id);
         # Set the handlers array so it can be accessed later
-        self.window.set_data("tab_handlers",handlers);
+        self.window.set_data("handlers",handlers);
         print "Window ", self.window, " activated."
         #######################################
 
@@ -31,11 +36,13 @@ class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         open_documents = []; # An array to hold all of the currently open documents
 
         self.window.set_data("open_documents",open_documents);
+
+        self.popup = GESTALTCompletionWindow(self.window, self.complete_callback);
         #######################################
 
     # Called when the plugin is deactivated.  Any cleanup should be done here
     def do_deactivate(self):
-        handlers = self.window.get_data("tab_handlers")
+        handlers = self.window.get_data("handlers")
         for handler_id in handlers:
             self.window.disconnect(handler_id)
             print "Disconnected handler %s" % handler_id
@@ -86,3 +93,14 @@ class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         ###
 
         print "Removed tab"
+
+    def complete_callback(self):
+        print "COMPLETION CALLBACK!!"
+
+    def on_keypress(self,window,event):
+        print "Keypress",event.keyval,"  ", event.string
+
+        root_x, root_y = self.window.get_position()
+        self.popup.move(root_x + 100, root_y + 100)
+        self.popup.show_all()
+
