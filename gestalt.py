@@ -1,4 +1,4 @@
-from gi.repository import GObject, Gedit
+from gi.repository import GObject, Gedit, Gtk
 from GESTALTDocument import GESTALTDocument
 from GESTALTCompletionWindow import GESTALTCompletionWindow
 
@@ -47,13 +47,14 @@ class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             self.window.disconnect(handler_id)
             print "Disconnected handler %s" % handler_id
 
-        print "Window ", self.window, " deactivated."
+        print "Window ", self.window, " deactivated
 
     # Called on several events when using the window.  Here is an incomplete list
     #   File saves
     #   Newline after a pause
     def do_update_state(self):
-        print "Window %s state updated." % self.window
+        a = 0; # Dummy line
+        #print "Window %s state updated." % self.window
 
     # The handler callback for when a tab is added
     def on_tab_added(self, window, tab, data=None):
@@ -98,9 +99,28 @@ class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         print "COMPLETION CALLBACK!!"
 
     def on_keypress(self,window,event):
-        print "Keypress",event.keyval,"  ", event.string
+#        print "Keypress",event.keyval,"  ", event.string
+
+#        doc = window.get_active_document()
+#        path = doc.get_uri_for_display()
+#        f = open(path);
+#        print f.read()
+
+#        a = dir(Gedit.View);
+#        f = open('Gedit.View','w');
+#        for b in a:
+#            f.write(b+'\n');
+
+        # Find the current location of the cursor so that we can place the popup box at the right spot
+        view = window.get_active_view()
+        doc = view.get_buffer()
+        insert = doc.get_iter_at_mark(doc.get_insert())
+        rect = view.get_iter_location(insert)
+        x, y = view.buffer_to_window_coords(Gtk.TextWindowType.TEXT, rect.x, rect.y)
+        x, y = window.translate_coordinates(self.window, x, y)
 
         root_x, root_y = self.window.get_position()
-        self.popup.move(root_x + 100, root_y + 100)
-        self.popup.show_all()
+        self.popup.move(root_x + x + 40, root_y + y + 120)
+        if event.keyval == 96:
+            self.popup.show_all()
 
