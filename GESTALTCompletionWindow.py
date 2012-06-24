@@ -33,7 +33,7 @@ class GESTALTCompletionWindow(Gtk.Window):
            self.hide()
         elif event.keyval == 65288: # Backspace
            self.hide()
-        elif event.keyval in ([65293,65289]): # Return or tab
+        elif event.keyval in [65293,65289]: # Return or tab
            self.complete()
         elif event.keyval == 65362: # Up arrow
            self.select_previous()
@@ -46,7 +46,7 @@ class GESTALTCompletionWindow(Gtk.Window):
 
     def focus_out_event(self, *args):
         print "Focus out"
-        #self.hide()
+        self.hide()
     
     def get_selected(self):
         """Get the selected row."""
@@ -88,7 +88,7 @@ class GESTALTCompletionWindow(Gtk.Window):
         self.view.set_rules_hint(True)
         selection = self.view.get_selection()
         selection.set_mode(Gtk.SelectionMode.SINGLE)
-        self.view.set_size_request(200, 200)
+        self.view.set_size_request(100, 100)
         self.view.connect('row-activated', self.row_activated)
         print "init_tree_view_finished"
 
@@ -137,3 +137,4 @@ class GESTALTCompletionWindow(Gtk.Window):
         """Set the label's font description."""
         print "set font description"
         #self.view.modify_font(font_desc)
+
