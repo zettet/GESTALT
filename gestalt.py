@@ -47,7 +47,7 @@ class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             self.window.disconnect(handler_id)
             print "Disconnected handler %s" % handler_id
 
-        print "Window ", self.window, " deactivated
+        print "Window ", self.window, " deactivated"
 
     # Called on several events when using the window.  Here is an incomplete list
     #   File saves
