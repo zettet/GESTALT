@@ -42,7 +42,8 @@ class GESTALTCompletionWindow(Gtk.Window):
 
     def complete(self):
         print "Complete"
-        #self.complete_callback(self.completions[self.get_selected()]['completion'])
+        self.complete_callback(self.completions[self.get_selected()][1])
+        self.hide()
 
     def focus_out_event(self, *args):
         print "Focus out"

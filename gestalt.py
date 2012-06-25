@@ -95,8 +95,10 @@ class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
 
         print "Removed tab"
 
-    def complete_callback(self):
-        print "COMPLETION CALLBACK!!"
+    def complete_callback(self,completion_text):
+        print "COMPLETION CALLBACK!!  "
+        doc = self.window.get_active_document()
+        doc.insert_at_cursor(completion_text)
 
     def on_keypress(self,window,event):
 #        print "Keypress",event.keyval,"  ", event.string
@@ -110,7 +112,7 @@ class GESTALTWindowActivatable(GObject.Object, Gedit.WindowActivatable):
 #        f = open('Gedit.View','w');
 #        for b in a:
 #            f.write(b+'\n');
-
+    
         # Find the current location of the cursor so that we can place the popup box at the right spot
         view = window.get_active_view()
         doc = view.get_buffer()
