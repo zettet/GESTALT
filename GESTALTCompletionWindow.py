@@ -22,10 +22,10 @@ class GESTALTCompletionWindow(Gtk.Window):
         self.text.set_sensitive(False)
         self.init_tree_view()
         self.init_frame()
+        self.set_completions([]);
         self.connect('focus-out-event', self.focus_out_event)
         self.connect('key-press-event', self.key_press_event)
         self.grab_focus()
-
     
     def key_press_event(self, widget, event):
         print "Key_press",event.keyval
@@ -51,8 +51,8 @@ class GESTALTCompletionWindow(Gtk.Window):
     def get_selected(self):
         """Get the selected row."""
         print "Get_selected"
-        #selection = self.view.get_selection()
-        #return selection.get_selected_rows()[1][0][0]
+        selection = self.view.get_selection()
+        return selection.get_selected_rows()[1][0].get_indices()[0]
 
     def init_frame(self):
         """Initialize the frame and scroller around the tree view."""
@@ -78,7 +78,7 @@ class GESTALTCompletionWindow(Gtk.Window):
         """Initialize the tree view listing the completions."""
 
         print "init_tree_view"
-        self.store = Gtk.ListStore(GObject.TYPE_STRING)
+        self.store = Gtk.ListStore(str,str) # If the list store should hold more fields, include them here.  This can also take a GObject
         self.view = Gtk.TreeView(self.store)
         renderer = Gtk.CellRendererText()
         column = Gtk.TreeViewColumn("", renderer, text=0)
@@ -88,7 +88,7 @@ class GESTALTCompletionWindow(Gtk.Window):
         self.view.set_rules_hint(True)
         selection = self.view.get_selection()
         selection.set_mode(Gtk.SelectionMode.SINGLE)
-        self.view.set_size_request(100, 100)
+        self.view.set_size_request(300, 200)
         self.view.connect('row-activated', self.row_activated)
         print "init_tree_view_finished"
 
@@ -100,38 +100,47 @@ class GESTALTCompletionWindow(Gtk.Window):
         """Select the next completion."""
 
         print "select next"
-        #row = min(self.get_selected() + 1, len(self.store) - 1)
-        #selection = self.view.get_selection()
-        #selection.unselect_all()
-        #selection.select_path(row)
-        #self.view.scroll_to_cell(row)
-        #self.text_buffer.set_text(self.completions[self.get_selected()]['info'])
+        row = min(self.get_selected() + 1, len(self.store) - 1)
+        selection = self.view.get_selection()
+        selection.unselect_all()
+        selection.select_path(row)
+        self.view.scroll_to_cell(row)
+      
+        self.text_buffer.set_text(self.completions[self.get_selected()][1])
 
     def select_previous(self):
         """Select the previous completion."""
 
         print "select previous"
-        #row = max(self.get_selected() - 1, 0)
-        #selection = self.view.get_selection()
-        #selection.unselect_all()
-        #selection.select_path(row)
-        #self.view.scroll_to_cell(row)
-        #self.text_buffer.set_text(self.completions[self.get_selected()]['info'])
+        row = max(self.get_selected() - 1, 0)
+        selection = self.view.get_selection()
+        selection.unselect_all()
+        selection.select_path(row)
+        self.view.scroll_to_cell(row)
+        
+        self.text_buffer.set_text(self.completions[self.get_selected()][1])
 
     def set_completions(self, completions):
         """Set the completions to display."""
 
         print "set completions"
 
+        self.completions = [["add","ADD"],
+                            ["the","THE"],
+                            ["completion","COMPLETION"],
+                            ["candidates","CANDIDATES"],
+                            ["here","HERE"]];
+
         #self.completions = completions
-        #self.completions.reverse()
-        #self.resize(1, 1)
-        #self.store.clear()
-        #for completion in completions:
-        #   self.store.append([unicode(completion['abbr'])])
-        #self.view.columns_autosize()
-        #self.view.get_selection().select_path(0)
-        #self.text_buffer.set_text(self.completions[self.get_selected()]['info'])
+        self.resize(1, 1)
+        self.store.clear()
+        for completion in self.completions:
+           self.store.append(completion)
+           #self.store.append([unicode(completion['abbr'])])
+
+        self.view.columns_autosize()
+        self.view.get_selection().select_path(0)
+        self.text_buffer.set_text(self.completions[0][1]);
 
     def set_font_description(self, font_desc):
         """Set the label's font description."""
